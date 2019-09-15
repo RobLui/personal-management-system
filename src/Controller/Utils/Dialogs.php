@@ -18,15 +18,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class Dialogs extends AbstractController
 {
     const TWIG_TEMPLATE_DIALOG_BODY_FILES_TRANSFER = 'page-elements/components/dialogs/bodies/files-transfer.html.twig';
-    const KEY_FILE_CURRENT_PATH                    = 'fileCurrentPath';
-    const KEY_MODULE_NAME                          = 'moduleName';
+    const KEY_FILE_CURRENT_PATH = 'fileCurrentPath';
+    const KEY_MODULE_NAME = 'moduleName';
 
     /**
      * @var Application $app
      */
     private $app;
 
-    public function __construct(Application $app) {
+    public function __construct(Application $app)
+    {
         $this->app = $app;
     }
 
@@ -36,23 +37,23 @@ class Dialogs extends AbstractController
      * @return JsonResponse
      * @throws \Exception
      */
-    public function buildDataTransferDialogBody(Request $request) {
-
-        if( !$request->request->has(static::KEY_FILE_CURRENT_PATH) ){
+    public function buildDataTransferDialogBody(Request $request)
+    {
+        if (!$request->request->has(static::KEY_FILE_CURRENT_PATH)) {
             return new JsonResponse([
-                'errorMessage' => "Request is missing key: ".static::KEY_FILE_CURRENT_PATH
+                'errorMessage' => "Request is missing key: " . static::KEY_FILE_CURRENT_PATH
             ]);
         }
 
-        if( !$request->request->has(static::KEY_MODULE_NAME) ){
+        if (!$request->request->has(static::KEY_MODULE_NAME)) {
             return new JsonResponse([
-                'errorMessage' => "Request is missing key: ".static::KEY_MODULE_NAME
+                'errorMessage' => "Request is missing key: " . static::KEY_MODULE_NAME
             ]);
         }
 
-        $module_name  = $request->request->get(static::KEY_MODULE_NAME);
+        $module_name = $request->request->get(static::KEY_MODULE_NAME);
 
-        if( !array_key_exists($module_name, FileUploadController::MODULES_UPLOAD_DIRS_FOR_MODULES_NAMES) ){
+        if (!array_key_exists($module_name, FileUploadController::MODULES_UPLOAD_DIRS_FOR_MODULES_NAMES)) {
             return new JsonResponse([
                 'errorMessage' => "Module name is incorrect."
             ]);
@@ -61,13 +62,13 @@ class Dialogs extends AbstractController
         $file_current_path = $request->request->get(static::KEY_FILE_CURRENT_PATH);
 
         //In some cases the path starts with "/" on frontend and this is required there but here we want path without it
-        if( preg_match("#^\/#", $file_current_path) ){
-            $file_current_path = preg_replace('#^\/#','', $file_current_path);
+        if (preg_match("#^\/#", $file_current_path)) {
+            $file_current_path = preg_replace('#^\/#', '', $file_current_path);
         }
 
         $file = new File($file_current_path);
 
-        if( !$file->isFile() ){
+        if (!$file->isFile()) {
             return new JsonResponse([
                 'errorMessage' => "File provided in filepath is incorrect - such file does not exist"
             ]);
@@ -75,7 +76,7 @@ class Dialogs extends AbstractController
 
         $all_upload_based_modules = FileUploadController::MODULES_UPLOAD_DIRS_FOR_MODULES_NAMES;
 
-        $form_data  = [
+        $form_data = [
             FilesHandler::KEY_MODULES_NAMES => $all_upload_based_modules
         ];
         $form = $this->app->forms->moveSingleFile($form_data);
@@ -92,5 +93,4 @@ class Dialogs extends AbstractController
 
         return new JsonResponse($response_data);
     }
-
 }

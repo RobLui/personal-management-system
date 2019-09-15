@@ -3,7 +3,6 @@
 namespace App\Controller\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 
 class Env extends AbstractController {
 

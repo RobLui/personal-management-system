@@ -7,18 +7,19 @@ use App\Controller\Utils\Repositories;
 use App\Entity\Modules\Car\MyCar;
 use App\Form\Modules\Car\MyCarSchedule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class MyCarController extends AbstractController {
-
+class MyCarController extends AbstractController
+{
     /**
      * @var Application
      */
     private $app;
 
-    public function __construct(Application $app) {
+    public function __construct(Application $app)
+    {
         $this->app = $app;
     }
 
@@ -27,7 +28,8 @@ class MyCarController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function display(Request $request) {
+    public function display(Request $request)
+    {
         $this->addFormDataToDB($this->getForm(), $request);
 
         if (!$request->isXmlHttpRequest()) {
@@ -38,17 +40,38 @@ class MyCarController extends AbstractController {
     }
 
     /**
+     * @param $car_schedule_form
+     * @param Request $request
+     */
+    protected function addFormDataToDB($car_schedule_form, Request $request): void
+    {
+        $car_schedule_form->handleRequest($request);
+
+        if ($car_schedule_form->isSubmitted() && $car_schedule_form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($car_schedule_form->getData());
+            $em->flush();
+        }
+    }
+
+    private function getForm()
+    {
+        return $this->createForm(MyCarSchedule::class);
+    }
+
+    /**
      * @param $form
      * @param bool $ajax_render
      * @return Response
      */
-    protected function renderTemplate($form, $ajax_render = false) {
+    protected function renderTemplate($form, $ajax_render = false)
+    {
         $car_schedule_form_view = $form->createView();
 
         $column_names = $this->getDoctrine()->getManager()->getClassMetadata(MyCar::class)->getColumnNames();
         Repositories::removeHelperColumnsFromView($column_names);
 
-        $car_all_data            = $this->app->repositories->myCarRepository->findBy(['deleted' => 0]);
+        $car_all_data = $this->app->repositories->myCarRepository->findBy(['deleted' => 0]);
         $car_all_schedules_types = $this->app->repositories->myCarSchedulesTypesRepository->findBy(['deleted' => 0]);
 
         return $this->render('modules/my-car/my-car.html.twig',
@@ -62,33 +85,16 @@ class MyCarController extends AbstractController {
         );
     }
 
-    private function getForm() {
-        return $this->createForm(MyCarSchedule::class);
-    }
-
-    /**
-     * @param $car_schedule_form
-     * @param Request $request
-     */
-    protected function addFormDataToDB($car_schedule_form, Request $request): void {
-        $car_schedule_form->handleRequest($request);
-
-        if ($car_schedule_form->isSubmitted() && $car_schedule_form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($car_schedule_form->getData());
-            $em->flush();
-        }
-    }
-
     /**
      * @Route("/my-car/update/",name="my-car-update")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $parameters = $request->request->all();
-        $entity     = $this->getDoctrine()->getRepository(MyCar::class)->find($parameters['id']);
-        $response   = $this->app->repositories->update($parameters, $entity);
+        $entity = $this->getDoctrine()->getRepository(MyCar::class)->find($parameters['id']);
+        $response = $this->app->repositories->update($parameters, $entity);
 
         return $response;
     }
@@ -99,7 +105,8 @@ class MyCarController extends AbstractController {
      * @return Response
      * @throws \Exception
      */
-    public function removeMyCarInDB(Request $request): Response {
+    public function removeMyCarInDB(Request $request): Response
+    {
 
         $response = $this->app->repositories->deleteById(
             Repositories::MY_CAR_REPOSITORY_NAME,
@@ -111,6 +118,4 @@ class MyCarController extends AbstractController {
         }
         return $response;
     }
-
-
 }

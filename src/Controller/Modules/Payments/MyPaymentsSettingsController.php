@@ -16,17 +16,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MyPaymentsSettingsController extends AbstractController {
-
+class MyPaymentsSettingsController extends AbstractController
+{
     private $em;
     /**
      * @var Application
      */
     private $app;
 
-    public function __construct(Application $app, EntityManagerInterface $em) {
-        $this->em   = $em;
-        $this->app  = $app;
+    public function __construct(Application $app, EntityManagerInterface $em)
+    {
+        $this->em = $em;
+        $this->app = $app;
     }
 
     /**
@@ -34,7 +35,8 @@ class MyPaymentsSettingsController extends AbstractController {
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function display(Request $request) {
+    public function display(Request $request)
+    {
         $setting_type = $request->request->all();
         $setting_type = reset($setting_type)['name'];
 
@@ -42,7 +44,7 @@ class MyPaymentsSettingsController extends AbstractController {
             case 'type':
 
                 $payments_types_form = $this->getPaymentTypeForm();
-                $response            = $this->addPaymentType($payments_types_form, $request);
+                $response = $this->addPaymentType($payments_types_form, $request);
                 break;
 
             case 'currency_multiplier':
@@ -65,36 +67,9 @@ class MyPaymentsSettingsController extends AbstractController {
 
     }
 
-    /**
-     * @Route("/my-payments-settings/remove/", name="my-payments-settings-remove")
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function remove(Request $request) {
-        $response = $this->app->repositories->deleteById(
-            Repositories::MY_PAYMENTS_SETTINGS_REPOSITORY_NAME,
-            $request->request->get('id')
-        );
-
-        if ($response->getStatusCode() == 200) {
-            return $this->renderTemplate(true);
-        }
-        return $response;
-    }
-
-    /**
-     * @Route("/my-payments-settings/update", name="my-payments-settings-update")
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function update(Request $request) {
-        $parameters = $request->request->all();
-        $entity     = $this->app->repositories->myPaymentsSettingsRepository->find($parameters['id']);
-        $response   = $this->app->repositories->update($parameters, $entity);
-
-        return $response;
+    private function getPaymentTypeForm()
+    {
+        return $this->createForm(MyPaymentsTypesType::class);
     }
 
     /**
@@ -102,7 +77,8 @@ class MyPaymentsSettingsController extends AbstractController {
      * @param Request $request
      * @return JsonResponse
      */
-    protected function addPaymentType(FormInterface $payments_types_form, Request $request) {
+    protected function addPaymentType(FormInterface $payments_types_form, Request $request)
+    {
         $payments_types_form->handleRequest($request);
 
         /**
@@ -124,26 +100,8 @@ class MyPaymentsSettingsController extends AbstractController {
 
     }
 
-    /**
-     * @param bool $ajax_render
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    private function renderTemplate($ajax_render = false) {
-        $payments_types = $this->app->repositories->myPaymentsSettingsRepository->getAllPaymentsTypes();
-
-        return $this->render('modules/my-payments/settings.html.twig', [
-            'currency_multiplier_form'  => $this->getCurrencyMultiplierForm()->createView(),
-            'payments_types_form'       => $this->getPaymentTypeForm()->createView(),
-            'payments_types'            => $payments_types,
-            'ajax_render'               => $ajax_render
-        ]);
-    }
-
-    private function getPaymentTypeForm() {
-        return $this->createForm(MyPaymentsTypesType::class);
-    }
-
-    private function getCurrencyMultiplierForm() {
+    private function getCurrencyMultiplierForm()
+    {
         return $this->createForm(MyPaymentsSettingsCurrencyMultiplierType::class, null, [
             'em' => $this->em
         ]);
@@ -155,11 +113,12 @@ class MyPaymentsSettingsController extends AbstractController {
      * @param Request $request
      */
 
-    protected function insertOrUpdateRecord($currency_multiplier_form, Request $request) {
+    protected function insertOrUpdateRecord($currency_multiplier_form, Request $request)
+    {
         $currency_multiplier_form->handleRequest($request);
 
         if ($currency_multiplier_form->isSubmitted() && $currency_multiplier_form->isValid()) {
-            $form_data          = $currency_multiplier_form->getData();
+            $form_data = $currency_multiplier_form->getData();
             $settings_epository = $this->em->getRepository(MyPaymentsSettings::class);
 
             if ($settings_epository->fetchCurrencyMultiplier()) {
@@ -170,15 +129,67 @@ class MyPaymentsSettingsController extends AbstractController {
         }
     }
 
-    private function updateCurrencyMultiplierRecord($repository, $form_data) {
+    private function updateCurrencyMultiplierRecord($repository, $form_data)
+    {
         $orm_record = $repository->fetchCurrencyMultiplierRecord()[0];
         $orm_record->setValue($form_data->getValue());
         $this->em->persist($orm_record);
         $this->em->flush();
     }
 
-    private function createRecord($record_data) {
+    private function createRecord($record_data)
+    {
         $this->em->persist($record_data);
         $this->em->flush();
+    }
+
+    /**
+     * @param bool $ajax_render
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function renderTemplate($ajax_render = false)
+    {
+        $payments_types = $this->app->repositories->myPaymentsSettingsRepository->getAllPaymentsTypes();
+
+        return $this->render('modules/my-payments/settings.html.twig', [
+            'currency_multiplier_form' => $this->getCurrencyMultiplierForm()->createView(),
+            'payments_types_form' => $this->getPaymentTypeForm()->createView(),
+            'payments_types' => $payments_types,
+            'ajax_render' => $ajax_render
+        ]);
+    }
+
+    /**
+     * @Route("/my-payments-settings/remove/", name="my-payments-settings-remove")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function remove(Request $request)
+    {
+        $response = $this->app->repositories->deleteById(
+            Repositories::MY_PAYMENTS_SETTINGS_REPOSITORY_NAME,
+            $request->request->get('id')
+        );
+
+        if ($response->getStatusCode() == 200) {
+            return $this->renderTemplate(true);
+        }
+        return $response;
+    }
+
+    /**
+     * @Route("/my-payments-settings/update", name="my-payments-settings-update")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function update(Request $request)
+    {
+        $parameters = $request->request->all();
+        $entity = $this->app->repositories->myPaymentsSettingsRepository->find($parameters['id']);
+        $response = $this->app->repositories->update($parameters, $entity);
+
+        return $response;
     }
 }

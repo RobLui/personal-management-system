@@ -10,15 +10,13 @@ use App\Repository\Modules\Job\MyJobAfterhoursRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
-class MyJobAfterhoursController extends AbstractController {
-
-    static $AFTERHOURS_ENTITY_CLASS;
-
+class MyJobAfterhoursController extends AbstractController
+{
     const GENERAL_USAGE = 'general usage';
-
+    static $AFTERHOURS_ENTITY_CLASS;
     /**
      * @var array $entity_enums
      */
@@ -29,17 +27,18 @@ class MyJobAfterhoursController extends AbstractController {
      */
     private $app;
 
-    public function __construct(Application $app) {
+    public function __construct(Application $app)
+    {
         static::$AFTERHOURS_ENTITY_CLASS = MyJobAfterhours::class;
 
-        $entity_enums       = [static::$AFTERHOURS_ENTITY_CLASS::TYPE_MADE, static::$AFTERHOURS_ENTITY_CLASS::TYPE_SPENT];
+        $entity_enums = [static::$AFTERHOURS_ENTITY_CLASS::TYPE_MADE, static::$AFTERHOURS_ENTITY_CLASS::TYPE_SPENT];
 
         $this->entity_enums = array_combine(
             array_map('ucfirst', array_values($entity_enums)),
             $entity_enums
         );
 
-        $this->app   = $app;
+        $this->app = $app;
     }
 
     /**
@@ -47,7 +46,8 @@ class MyJobAfterhoursController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function display(Request $request) {
+    public function display(Request $request)
+    {
         $this->addFormDataToDB($this->getForm(), $request);
 
         if (!$request->isXmlHttpRequest()) {
@@ -59,18 +59,51 @@ class MyJobAfterhoursController extends AbstractController {
 
     /**
      * @param $form
+     * @param Request $request
+     * @return void
+     */
+    protected function addFormDataToDB(FormInterface $form, Request $request): void
+    {
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($form->getData());
+            $em->flush();
+        }
+    }
+
+    private function getForm()
+    {
+        $goalsWithTimes = $this->app->repositories->myJobAfterhoursRepository->getGoalsWithTime();
+        $goals = [];
+
+        foreach ($goalsWithTimes as $goalWithTime) {
+            $goals[] = $goalWithTime[MyJobAfterhoursRepository::GOAL_FIELD];
+        }
+
+        return $this->createForm(MyJobAfterhoursType::class, null, [
+            'entity_enums' => $this->entity_enums,
+            'goals' => $goals,
+        ]);
+    }
+
+    /**
+     * @param $form
      * @param bool $ajax_render
      * @return Response
      */
-    protected function renderTemplate($form, $ajax_render = false) {
+    protected function renderTemplate($form, $ajax_render = false)
+    {
         $afterhours_form_view = $form->createView();
 
-        $column_names       = $this->getDoctrine()->getManager()->getClassMetadata(static::$AFTERHOURS_ENTITY_CLASS)->getColumnNames();
+        $column_names = $this->getDoctrine()->getManager()->getClassMetadata(static::$AFTERHOURS_ENTITY_CLASS)->getColumnNames();
         Repositories::removeHelperColumnsFromView($column_names);
 
-        $afterhours_all     = $this->app->repositories->myJobAfterhoursRepository->findBy(['deleted' => 0]);
-        $afterhours_spent   = $this->filterAfterhours($afterhours_all, static::$AFTERHOURS_ENTITY_CLASS::TYPE_SPENT);
-        $afterhours_made    = $this->filterAfterhours($afterhours_all, static::$AFTERHOURS_ENTITY_CLASS::TYPE_MADE);
+        $afterhours_all = $this->app->repositories->myJobAfterhoursRepository->findBy(['deleted' => 0]);
+        $afterhours_spent = $this->filterAfterhours($afterhours_all, static::$AFTERHOURS_ENTITY_CLASS::TYPE_SPENT);
+        $afterhours_made = $this->filterAfterhours($afterhours_all, static::$AFTERHOURS_ENTITY_CLASS::TYPE_MADE);
 
         $remaining_time_to_spend_per_goal = $this->getTimeToSpend();
 
@@ -85,7 +118,8 @@ class MyJobAfterhoursController extends AbstractController {
         ));
     }
 
-    private function filterAfterhours(array $afterhours_all, string $type_filtered): array {
+    private function filterAfterhours(array $afterhours_all, string $type_filtered): array
+    {
 
         return array_filter($afterhours_all, function ($afterhour) use ($type_filtered) {
             return $afterhour->getType() === $type_filtered;
@@ -96,34 +130,19 @@ class MyJobAfterhoursController extends AbstractController {
     /**
      * @return array
      */
-    private function getTimeToSpend(): array {
+    private function getTimeToSpend(): array
+    {
         $afterhours = [];
 
         $goals = $this->app->repositories->myJobAfterhoursRepository->getGoalsWithTime();
 
         foreach ($goals as $goal) {
-            $time_remaining         = $goal[MyJobAfterhoursRepository::TIME_SUMMARY_FIELD];
-            $goal_key               = (is_null($goal[MyJobAfterhoursRepository::GOAL_FIELD]) ? static::GENERAL_USAGE : $goal[MyJobAfterhoursRepository::GOAL_FIELD]);
-            $afterhours[$goal_key]  = $time_remaining;
+            $time_remaining = $goal[MyJobAfterhoursRepository::TIME_SUMMARY_FIELD];
+            $goal_key = (is_null($goal[MyJobAfterhoursRepository::GOAL_FIELD]) ? static::GENERAL_USAGE : $goal[MyJobAfterhoursRepository::GOAL_FIELD]);
+            $afterhours[$goal_key] = $time_remaining;
         }
 
         return $afterhours;
-    }
-
-    /**
-     * @param $form
-     * @param Request $request
-     * @return void
-     */
-    protected function addFormDataToDB(FormInterface $form, Request $request): void {
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($form->getData());
-            $em->flush();
-        }
     }
 
     /**
@@ -131,10 +150,11 @@ class MyJobAfterhoursController extends AbstractController {
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $parameters = $request->request->all();
-        $entity     = $this->app->repositories->myJobAfterhoursRepository->find($parameters['id']);
-        $response   = $this->app->repositories->update($parameters, $entity);
+        $entity = $this->app->repositories->myJobAfterhoursRepository->find($parameters['id']);
+        $response = $this->app->repositories->update($parameters, $entity);
 
         return $response;
 
@@ -146,7 +166,8 @@ class MyJobAfterhoursController extends AbstractController {
      * @return Response
      * @throws \Exception
      */
-    public function remove(Request $request) {
+    public function remove(Request $request)
+    {
 
         $response = $this->app->repositories->deleteById(
             Repositories::MY_JOB_AFTERHOURS_REPOSITORY_NAME,
@@ -158,20 +179,4 @@ class MyJobAfterhoursController extends AbstractController {
         }
         return $response;
     }
-
-    private function getForm() {
-        $goalsWithTimes = $this->app->repositories->myJobAfterhoursRepository->getGoalsWithTime();
-        $goals          = [];
-
-        foreach ($goalsWithTimes as $goalWithTime) {
-            $goals[] = $goalWithTime[MyJobAfterhoursRepository::GOAL_FIELD];
-        }
-
-        return $this->createForm(MyJobAfterhoursType::class, null, [
-            'entity_enums' => $this->entity_enums,
-            'goals'        => $goals,
-        ]);
-    }
-
-
 }

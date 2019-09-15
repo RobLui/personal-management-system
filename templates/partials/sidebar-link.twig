@@ -1,0 +1,7 @@
+<a class="sidebar-link" href="{{ 'javascript' not in c_url ? path(c_url)|default() : c_url }}">
+    <span class="icon-holder" style="color:{{ c_color }}"><i class="{{ c_icon|default() }}"></i></span>
+    <span class="title">{{ c_title|default() }}</span>
+    {% if has_arrow|default(false) %}
+        <span class="arrow"><i class="ti-angle-right"></i></span>
+    {% endif %}
+</a>

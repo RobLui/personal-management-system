@@ -6,13 +6,14 @@ use App\Controller\Utils\Application;
 use App\Controller\Utils\Repositories;
 use App\Entity\Modules\Passwords\MyPasswords;
 use App\Form\Modules\Passwords\MyPasswordsType;
+use SpecShaper\EncryptBundle\Encryptors\EncryptorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use SpecShaper\EncryptBundle\Encryptors\EncryptorInterface;
 
-class MyPasswordsController extends AbstractController {
+class MyPasswordsController extends AbstractController
+{
     /**
      * @var Application $app
      */
@@ -22,8 +23,9 @@ class MyPasswordsController extends AbstractController {
      */
     private $encryptor;
 
-    public function __construct(Application $app, EncryptorInterface $encryptor) {
-        $this->app      = $app;
+    public function __construct(Application $app, EncryptorInterface $encryptor)
+    {
+        $this->app = $app;
         $this->encryptor = $encryptor;
     }
 
@@ -33,7 +35,8 @@ class MyPasswordsController extends AbstractController {
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function display(Request $request) {
+    public function display(Request $request)
+    {
 
         $this->addFormDataToDB($this->getForm(), $request);
 
@@ -44,12 +47,56 @@ class MyPasswordsController extends AbstractController {
     }
 
     /**
+     * @param $form
+     * @param $request
+     */
+    protected function addFormDataToDB($form, $request)
+    {
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted($request) && $form->isValid()) {
+
+            /**
+             * @var $form_data MyPasswords
+             */
+            $form_data = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($form_data);
+            $em->flush();
+        }
+
+    }
+
+    private function getForm()
+    {
+        return $this->createForm(MyPasswordsType::class);
+    }
+
+    protected function renderTemplate($ajax_render = false)
+    {
+
+        $form = $this->getForm();
+        $form_view = $form->createView();
+        $passwords = $this->app->repositories->myPasswordsRepository->findBy(['deleted' => 0]);
+        $groups = $this->app->repositories->myPasswordsGroupsRepository->findBy(['deleted' => 0]);
+
+        return $this->render('modules/my-passwords/my-passwords.html.twig', [
+            'form' => $form_view,
+            'ajax_render' => $ajax_render,
+            'passwords' => $passwords,
+            'groups' => $groups
+        ]);
+
+    }
+
+    /**
      * @Route("/my-passwords/remove/", name="my-passwords-remove")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function remove(Request $request) {
+    public function remove(Request $request)
+    {
 
         $response = $this->app->repositories->deleteById(
             Repositories::MY_PASSWORDS_REPOSITORY_NAME,
@@ -67,48 +114,13 @@ class MyPasswordsController extends AbstractController {
      * @param Request $request
      * @return JsonResponse
      */
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $parameters = $request->request->all();
-        $entity     = $this->app->repositories->myPasswordsRepository->find($parameters['id']);
-        $response   = $this->app->repositories->update($parameters, $entity);
+        $entity = $this->app->repositories->myPasswordsRepository->find($parameters['id']);
+        $response = $this->app->repositories->update($parameters, $entity);
 
         return $response;
-    }
-
-    protected function renderTemplate($ajax_render = false) {
-
-        $form       = $this->getForm();
-        $form_view  = $form->createView();
-        $passwords  = $this->app->repositories->myPasswordsRepository->findBy(['deleted' => 0]);
-        $groups     = $this->app->repositories->myPasswordsGroupsRepository->findBy(['deleted' => 0]);
-
-        return $this->render('modules/my-passwords/my-passwords.html.twig', [
-            'form'          => $form_view,
-            'ajax_render'   => $ajax_render,
-            'passwords'     => $passwords,
-            'groups'        => $groups
-        ]);
-
-    }
-
-    /**
-     * @param $form
-     * @param $request
-     */
-    protected function addFormDataToDB($form, $request) {
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted($request) && $form->isValid()) {
-
-            /**
-             * @var $form_data MyPasswords
-             */
-            $form_data = $form->getData();
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($form_data);
-            $em->flush();
-        }
-
     }
 
     /**
@@ -117,7 +129,8 @@ class MyPasswordsController extends AbstractController {
      * @return JsonResponse
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getPasswordForId($id) {
+    public function getPasswordForId($id)
+    {
         try {
             $encrypted_password = $this->app->repositories->myPasswordsRepository->getPasswordForId($id);
             $decrypted_password = $this->encryptor->decrypt($encrypted_password);
@@ -125,9 +138,5 @@ class MyPasswordsController extends AbstractController {
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), $e->getCode());
         }
-    }
-
-    private function getForm() {
-        return $this->createForm(MyPasswordsType::class);
     }
 }

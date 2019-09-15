@@ -42,3 +42,4 @@ src/DataFixtures/AppFixtures.php
 #Password hasher secret key
 config/services.yaml
 src/Migrations/*
+.env

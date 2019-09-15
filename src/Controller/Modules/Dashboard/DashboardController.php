@@ -7,8 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class DashboardController extends Controller {
-
+class DashboardController extends Controller
+{
     const CAR_SCHEDULE_MONTHS_INTERVAL = 2;
 
     /**
@@ -16,7 +16,8 @@ class DashboardController extends Controller {
      */
     private $app;
 
-    public function __construct(Application $app) {
+    public function __construct(Application $app)
+    {
 
         $this->app = $app;
     }
@@ -25,37 +26,40 @@ class DashboardController extends Controller {
      * @Route("/dashboard", name="dashboard")
      * @return Response
      */
-    public function default() {
+    public function default()
+    {
 
-        $car_schedules              = $this->getCarSchedulesForWidget();
-        $goals                      = $this->getGoalsForWidget();
-        $goals_payments             = $this->getGoalsPayments();
+        $car_schedules = $this->getCarSchedulesForWidget();
+        $goals = $this->getGoalsForWidget();
+        $goals_payments = $this->getGoalsPayments();
 
         $data = [
-            'incomingCarSchedules'   => $car_schedules,
-            'goals'                  => $goals,
-            'goals_payments'         => $goals_payments,
+            'incomingCarSchedules' => $car_schedules,
+            'goals' => $goals,
+            'goals_payments' => $goals_payments,
         ];
 
         return $this->render("modules/my-dashboard/dashboard.html.twig", $data);
     }
 
-    private function getCarSchedulesForWidget() {
+    private function getCarSchedulesForWidget()
+    {
         return $this->app->repositories->myCarRepository->getIncomingCarSchedulesInMonths(static::CAR_SCHEDULE_MONTHS_INTERVAL);
     }
 
-    private function getGoalsForWidget(){
+    private function getGoalsForWidget()
+    {
         return $this->app->repositories->myGoalsRepository->findBy([
             'displayOnDashboard' => 1,
-            'deleted'            => 0
+            'deleted' => 0
         ]);
     }
 
-    private function getGoalsPayments(){
+    private function getGoalsPayments()
+    {
         return $this->app->repositories->myGoalsPaymentsRepository->findBy([
             'displayOnDashboard' => 1,
-            'deleted'            => 0
+            'deleted' => 0
         ]);
     }
-
 }

@@ -7,22 +7,21 @@ use App\Controller\Utils\Application;
 use App\Controller\Utils\Repositories;
 use App\Entity\Modules\Notes\MyNotesCategories;
 use App\Form\Modules\Notes\MyNotesType;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MyNotesController extends AbstractController {
-
+class MyNotesController extends AbstractController
+{
     /**
      * @var Application
      */
     private $app;
 
-    public function __construct(Application $app) {
+    public function __construct(Application $app)
+    {
         $this->app = $app;
     }
 
@@ -31,7 +30,8 @@ class MyNotesController extends AbstractController {
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function createNote(Request $request) {
+    public function createNote(Request $request)
+    {
         $form_view = $this->getForm()->createView();
         $this->addToDB($this->getForm(), $request);
 
@@ -39,17 +39,39 @@ class MyNotesController extends AbstractController {
             return $this->render('modules/my-notes/new-note.html.twig',
                 [
                     'ajax_render' => false,
-                    'form'        => $form_view
+                    'form' => $form_view
                 ]
             );
         }
 
         return $this->render('modules/my-notes/new-note.html.twig',
             [
-                'ajax_render'   => true,
-                'form'          => $form_view
+                'ajax_render' => true,
+                'form' => $form_view
             ]
         );
+    }
+
+    private function getForm()
+    {
+
+        return $this->createForm(MyNotesType::class);
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param Request $request
+     */
+    private function addToDB(FormInterface $form, Request $request): void
+    {
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($form->getData());
+            $em->flush();
+        }
     }
 
     /**
@@ -59,7 +81,8 @@ class MyNotesController extends AbstractController {
      * @param $category_id
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function openCategory(Request $request, $category, $category_id) {
+    public function openCategory(Request $request, $category, $category_id)
+    {
 
         /**
          * @var MyNotesCategories $requested_category
@@ -79,10 +102,10 @@ class MyNotesController extends AbstractController {
         }
 
         return $this->render('modules/my-notes/category.html.twig', [
-            'category'      => $category,
-            'category_id'   => $category_id,
-            'ajax_render'   => false,
-            'notes'         => $notes
+            'category' => $category,
+            'category_id' => $category_id,
+            'ajax_render' => false,
+            'notes' => $notes
         ]);
     }
 
@@ -91,11 +114,12 @@ class MyNotesController extends AbstractController {
      * @param $noteName
      * @return Response
      */
-    public function openNote(string $noteName) {
+    public function openNote(string $noteName)
+    {
 
         return $this->render('modules/my-notes/note-details.html.twig', [
-            'ajax_render'   => false,
-            'note'          => $noteName
+            'ajax_render' => false,
+            'note' => $noteName
         ]);
     }
 
@@ -104,12 +128,13 @@ class MyNotesController extends AbstractController {
      * @param Request $request
      * @return Response
      */
-    public function update(Request $request): Response {
+    public function update(Request $request): Response
+    {
 
-        $parameters         = $request->request->all();
-        $entity             = $this->app->repositories->myNotesRepository->find($parameters['id']);
+        $parameters = $request->request->all();
+        $entity = $this->app->repositories->myNotesRepository->find($parameters['id']);
 
-        $response           = $this->app->repositories->update($parameters, $entity);
+        $response = $this->app->repositories->update($parameters, $entity);
 
         return $response;
     }
@@ -120,7 +145,8 @@ class MyNotesController extends AbstractController {
      * @return Response
      * @throws \Exception
      */
-    public function deleteNote(Request $request): Response {
+    public function deleteNote(Request $request): Response
+    {
 
         $response = $this->app->repositories->deleteById(
             Repositories::MY_NOTES_REPOSITORY_NAME,
@@ -133,25 +159,4 @@ class MyNotesController extends AbstractController {
         }
         return $response;
     }
-
-    /**
-     * @param FormInterface $form
-     * @param Request $request
-     */
-    private function addToDB(FormInterface $form, Request $request): void {
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($form->getData());
-            $em->flush();
-        }
-    }
-
-    private function getForm() {
-
-        return $this->createForm(MyNotesType::class);
-    }
-
 }

@@ -12,8 +12,8 @@ namespace App\Controller\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class Application extends AbstractController {
-
+class Application extends AbstractController
+{
     /**
      * @var Repositories
      */
@@ -29,7 +29,8 @@ class Application extends AbstractController {
      */
     public $em;
 
-    public function __construct(Repositories $repositories, Forms $forms, EntityManagerInterface $em) {
+    public function __construct(Repositories $repositories, Forms $forms, EntityManagerInterface $em)
+    {
         $this->repositories = $repositories;
         $this->forms = $forms;
         $this->em = $em;
@@ -39,7 +40,7 @@ class Application extends AbstractController {
      * Initialization of dependencies for used classes from scope of Application cannot be done in constructor as
      * constructor does not have access/has restricted access to container
      */
-    public function init() {
+    public function init()
+    {
     }
-
 }

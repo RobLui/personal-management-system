@@ -1,10 +1,12 @@
 {
     "name": "volmarg/personal-management-system",
-    "authors": [{
-        "name": "Dariusz Włodarczyk",
-        "email": "dwlodarczyk12@gmail.com",
-        "role": "Developer"
-    }],
+    "authors": [
+        {
+            "name": "Dariusz Włodarczyk",
+            "email": "dwlodarczyk12@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "description": "Personal Management System - Your central point for managing personal data",
     "license": "MIT",
     "keywords": [
@@ -18,7 +20,7 @@
     ],
     "type": "project",
     "require": {
-        "php": "^7.2.0",
+        "php": "^7.1.0",
         "ext-iconv": "*",
         "beberlei/DoctrineExtensions": "^1.2",
         "friendsofsymfony/user-bundle": "dev-master",

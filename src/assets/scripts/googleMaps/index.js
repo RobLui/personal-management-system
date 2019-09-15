@@ -6,8 +6,8 @@ export default (function () {
     loadGoogleMapsAPI({
       key: 'AIzaSyDW8td30_gj6sGXjiMU0ALeMu1SDEwUnEA',
     }).then(() => {
-      const latitude  = 26.8206;
-      const longitude = 30.8025;
+      const latitude  = 50;
+      const longitude = 3.4;
       const mapZoom   = 5;
       const { google }    = window;
 

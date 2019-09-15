@@ -13,19 +13,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MoveSingleFileType extends AbstractType
 {
-
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
             ->add(FilesHandler::KEY_TARGET_MODULE_UPLOAD_DIR, ChoiceType::class, [
                 'choices' => FileUploadController::MODULES_UPLOAD_DIRS_FOR_MODULES_NAMES,
-                'attr'    => [
-                    'class'                        => 'form-control listFilterer',
+                'attr' => [
+                    'class' => 'form-control listFilterer',
                     'data-dependent-list-selector' => '#move_single_file_target_subdirectory_path'
                 ]
             ])
             ->add(FileUploadController::KEY_SUBDIRECTORY_TARGET_PATH_IN_MODULE_UPLOAD_DIR, UploadrecursiveoptionsType::class, [
-                'choices'   => [], //this is not used anyway but parent ChoiceType requires it
-                'required'  => true
+                'choices' => [], //this is not used anyway but parent ChoiceType requires it
+                'required' => true
             ])
             ->add('submit', SubmitType::class, [
             ]);

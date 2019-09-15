@@ -7,25 +7,24 @@ use App\Controller\Utils\Repositories;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Routing\Annotation\Route;
 
 class MyJobHolidaysPoolController extends AbstractController
 {
-
     /**
      * @var Application
      */
     private $app;
 
     /**
-     * @var MyJobSettingsController  $my_jobs_settings_controller
+     * @var MyJobSettingsController $my_jobs_settings_controller
      */
     private $my_jobs_settings_controller;
 
-    public function __construct(Application $app, MyJobSettingsController $my_jobs_settings_controller) {
-        $this->app                          = $app;
-        $this->my_jobs_settings_controller  = $my_jobs_settings_controller;
+    public function __construct(Application $app, MyJobSettingsController $my_jobs_settings_controller)
+    {
+        $this->app = $app;
+        $this->my_jobs_settings_controller = $my_jobs_settings_controller;
     }
 
     /**
@@ -33,10 +32,11 @@ class MyJobHolidaysPoolController extends AbstractController
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $parameters = $request->request->all();
-        $entity     = $this->app->repositories->myJobHolidaysPoolRepository->find($parameters['id']);
-        $response   = $this->app->repositories->update($parameters, $entity);
+        $entity = $this->app->repositories->myJobHolidaysPoolRepository->find($parameters['id']);
+        $response = $this->app->repositories->update($parameters, $entity);
 
         return $response;
 
@@ -48,7 +48,8 @@ class MyJobHolidaysPoolController extends AbstractController
      * @return Response
      * @throws \Exception
      */
-    public function remove(Request $request) {
+    public function remove(Request $request)
+    {
 
         $response = $this->app->repositories->deleteById(
             Repositories::MY_JOB_HOLIDAYS_POOL_REPOSITORY_NAME,
@@ -61,6 +62,4 @@ class MyJobHolidaysPoolController extends AbstractController
         }
         return $response;
     }
-
-
 }
