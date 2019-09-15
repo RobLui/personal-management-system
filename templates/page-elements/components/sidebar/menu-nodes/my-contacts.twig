@@ -1,9 +1,5 @@
 <li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'my-contacts') }}">
-    <a class="sidebar-link" href="javascript:void(0);">
-        <span class="icon-holder" style="color: rgb(231, 116, 27);"><i class="far fa-users"></i></span>
-        <span class="title">My contacts</span>
-        <span class="arrow"><i class="ti-angle-right"></i></span>
-    </a>
+    {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'rgb(231, 116, 27);', c_icon: 'far fa-users', c_title: 'Contacts', has_arrow: true} %}
 
     <ul class="dropdown-menu">
         <li><a class="sidebar-link" href="{{ path('my-contacts', {'type' : 'phone'} ) }}">Phone numbers</a></li>

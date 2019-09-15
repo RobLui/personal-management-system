@@ -1,4 +1,4 @@
-<li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'my-goals') }}">
+<li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'goals') }}">
     {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'rgb(178,34,34)', c_icon: 'fas fa-bullseye', c_title: 'Goals', has_arrow: true} %}
     <ul class="dropdown-menu">
         <li><a class="sidebar-link" href="{{ path('goals_list') }}">List</a></li>

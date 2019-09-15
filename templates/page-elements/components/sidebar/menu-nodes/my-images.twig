@@ -1,10 +1,5 @@
 <li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'my-images') }}">
-    <a class="sidebar-link" href="javascript:void(0);">
-        <span class="icon-holder" style="color: rgb(133,187,101);"><i class="fas fa-image"></i></span>
-        <span class="title">My Images</span>
-        <span class="arrow"><i class="ti-angle-right"></i></span>
-    </a>
-
+    {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'rgb(133,187,101);', c_icon: 'fas fa-image', c_title: 'Images', has_arrow: true} %}
     <ul class="dropdown-menu">
         <li>
             <a class="sidebar-link" href="{{ path('modules_my_images') }}">Main folder</a>

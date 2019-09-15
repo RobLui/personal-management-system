@@ -27,7 +27,7 @@ class MyTravelsIdeasController extends AbstractController
     }
 
     /**
-     * @Route("/my/travels/ideas", name="my-travels-ideas")
+     * @Route("/my-travels/ideas", name="my-travels-ideas")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */

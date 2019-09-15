@@ -1,14 +1,5 @@
 <li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'my-notes') }}">
-    <a class="sidebar-link" href="javascript:void(0);">
-                <span class="icon-holder" style="color:violet;">
-                    <i class="fas fa-book"></i>
-                </span>
-        <span class="title">My notes</span>
-        <span class="arrow">
-                    <i class="ti-angle-right"></i>
-                  </span>
-    </a>
-
+    {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'violet;', c_icon: 'fas fa-book', c_title: 'Notes', has_arrow: true} %}
     {# Notes - 1st level #}
     <ul class="dropdown-menu">
         <li>

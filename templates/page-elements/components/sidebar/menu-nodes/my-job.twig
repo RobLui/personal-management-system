@@ -1,10 +1,5 @@
 <li class="nav-item dropdown {{ keepMenuOpen(currUrl, path('my-job-afterhours')) }}">
-    <a class="sidebar-link" href="javascript:void(0);">
-        <span class="icon-holder"><i class="fas fa-desktop"></i></span>
-        <span class="title">My Job</span>
-        <span class="arrow"><i class="ti-angle-right"></i></span>
-    </a>
-
+    {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'rgb(114, 119, 122);', c_icon: 'fas fa-desktop', c_title: 'Job', has_arrow: true} %}
     <ul class="dropdown-menu">
         <li><a class="sidebar-link" href="{{ path('my-job-afterhours') }}">Afterhours</a></li>
         <li><a class="sidebar-link" href="{{ path('my-job-holidays') }}">Holidays</a></li>
