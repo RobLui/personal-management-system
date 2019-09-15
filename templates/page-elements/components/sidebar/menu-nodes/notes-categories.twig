@@ -1,13 +1,8 @@
 {% if elements is not empty %}
     {% set moduleToCheckActiveCategory = 'MyNotes' %}
-
     <li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'my-notes/category') }}">
-        <a class="sidebar-link" href="javascript:void(0);">
-            <span class="title">Categories</span>
-            <span class="arrow"><i class="ti-angle-right"></i></span>
-        </a>
+        {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'black;', c_icon: '', c_title: 'Categories', has_arrow: true} %}
         <ul class="dropdown-menu">
-
             {% for category in elements %}
                 {% if category in elements and category.parent_id is null %} {# recheck must be here as twig caches original array #}
 
@@ -24,8 +19,8 @@
                        style="display: inline;">
                         {# Icon #}
                         <span class="icon-holder" style="color:#{{ category.color }};">
-                                        <i class="fas {{ category.icon }}"></i>
-                                    </span>
+                            <i class="fas {{ category.icon }}"></i>
+                        </span>
                         <span class="title">{{ category.category | capitalize }}</span>
                     </a>
                     {% if category.childrens_id is null %}
@@ -36,7 +31,6 @@
                         <a class="sidebar-link" href="javascript:void(0);" style="display:inline;">
                             <span class="arrow"><i class="ti-angle-right"></i></span>
                         </a>
-
                         <ul class="dropdown-menu">
                             {% include 'page-elements/components/sidebar/components/recursive-nested-menu-element.twig' with {
                                 'childrens_id':category.childrens_id,
@@ -45,12 +39,10 @@
                             } %}
                         </ul>
                         </li>
-
                         {% set elements = unsetChildren(elements, category.childrens_id) %}
-
                     {% endif %}
-
-                {% endif %} {# recheck ends here #}
+                {% endif %}
+                {# recheck ends here #}
             {% endfor %}
         </ul>
     </li>

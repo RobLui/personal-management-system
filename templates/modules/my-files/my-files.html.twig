@@ -3,12 +3,9 @@
 {% else %}
     {% set template= "blank.html.twig" %}
 {% endif %}
-
     {% extends template %}
-
 {% block body %}
     <main class='main-content bgc-grey-100'>
-
         <!-- ### Top menu bar for adding goals ### !-->
         {% if not is_main_dir %}
             <div class="masonry-item col-md-12 mB-10" style="font-size: 19px;">
@@ -23,11 +20,9 @@
                 </div>
             </div>
         {% endif %}
-
         <div id='mainContent'>
             <div class="container-fluid">
                 {# DataTable#}
-
                 <div class="row">
                     <div class="col-md-12">
                         <div class="bgc-white bd bdrs-3 p-20 mB-20 d-flex flex-column">
@@ -44,5 +39,4 @@
             </div>
         </div>
     </main>
-
 {% endblock body %}

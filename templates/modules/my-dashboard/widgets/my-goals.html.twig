@@ -5,14 +5,12 @@
                 <h6 class="lh-1">Goals progress</h6>
             </div>
             <div class="layer w-100">
-
                 <ul class="list-c ">
                     {% for goal in goals %}
                         <li class=" list-group-item">
                             <b>{{ goal.name }}</b>
                             <ul class="list-c">
                                 {% for subgoal in goal.mySubgoal %}
-
                                     {#TODO: make a twig function for list from this#}
                                     {% if subgoal.completed %}
                                         {% set status_label   = 'success' %}
@@ -21,7 +19,6 @@
                                         {% set status_label   = 'info' %}
                                         {% set status_text    = 'Not done' %}
                                     {% endif %}
-
                                     <li style="margin-left:15px;margin-top:5px;">
                                         {{ subgoal.name }}
                                         <span class="peer" style="display:inline;">
@@ -33,7 +30,6 @@
                         </li>
                     {% endfor %}
                 </ul>
-
             </div>
         </div>
     </div>

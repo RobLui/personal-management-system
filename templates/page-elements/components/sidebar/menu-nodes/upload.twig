@@ -1,18 +1,6 @@
 <li class="nav-item dropdown {{ keepMenuOpen(currUrl, '', 'upload') }}">
-
-    <a class="sidebar-link" href="javascript:void(0);">
-        <span class="icon-holder" style="color:orange;">
-            <i class="fas fa-upload"></i>
-        </span>
-
-        <span class="title">Upload</span>
-        <span class="arrow">
-              <i class="ti-angle-right"></i>
-        </span>
-    </a>
-
+    {% include 'partials/sidebar-link.twig' with { c_url: 'javascript:void(0);', c_color: 'orange;', c_icon: 'fas fa-upload', c_title: 'Upload', has_arrow: true} %}
     <ul class="dropdown-menu">
-
         <li>
             <a class="sidebar-link" href="{{ path('upload') }}">
                 Add
@@ -20,10 +8,8 @@
         </li>
         <li>
             <a class="sidebar-link" href="{{ path('upload_settings') }}">
-                Manage
+                Settings
             </a>
         </li>
-
     </ul>
-
 </li>

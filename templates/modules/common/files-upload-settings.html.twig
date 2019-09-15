@@ -18,37 +18,28 @@
 {% else %}
     {% set template= "blank.html.twig" %}
 {% endif %}
-
     {% extends template %}
-
 {% block body %}
     <!-- ### $App Screen Content ### -->
     <main class='main-content bgc-grey-100'>
         <div id='mainContent'>
             <div class="container-fluid">
                 {# DataTable#}
-
                 <div class="row">
                     <div class="col-md-12">
-
                         <div class="row">
                             {# rename form #}
                             {% include 'modules/common/components/rename-form.twig' %}
-
                             {# create folder form #}
                             {% include 'modules/common/components/create-folder-form.twig' %}
                         </div>
-
                         <div class="row">
                             {# copy files between folders form #}
                             {% include 'modules/common/components/copy-data-form.twig' %}
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
-
 {% endblock body %}

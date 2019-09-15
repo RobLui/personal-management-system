@@ -1,16 +1,36 @@
 {% extends "base.html.twig" %}
 
  {% block body %}
-     <!-- ### $App Screen Content ### -->
+     {% set populated_dashboard = false %}
      <main class='main-content bgc-grey-100'>
          <div id='mainContent'>
              <div class="row gap-20 masonry pos-r">
                  <div class="masonry-sizer col-md-6"></div>
-
+                 {% if incomingCarSchedules|default()|length > 0 %}
                      {% include 'modules/my-dashboard/widgets/incoming-car-schedules.html.twig' %}
+                     {% set populated_dashboard = true %}
+                 {% endif %}
+                 {% if goals|default()|length > 0 %}
                      {% include 'modules/my-dashboard/widgets/my-goals.html.twig' %}
+                     {% set populated_dashboard = true %}
+                 {% endif %}
+                 {% if goals_payments|default()|length > 0 %}
                      {% include 'modules/my-dashboard/widgets/my-goals-payments.html.twig' %}
-
+                     {% set populated_dashboard = true %}
+                 {% endif %}
+                 {% if populated_dashboard == false %}
+                     <div class="masonry-item col-md-12">
+                         <div class="bd bgc-white p-20">
+                             <div class="layers">
+                                 <div class="layer w-100 mB-10">
+                                     <h6 class="lh-1">
+                                         Nothing to see on this dasbhoard (yet).
+                                     </h6>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 {% endif %}
              </div>
          </div>
      </main>

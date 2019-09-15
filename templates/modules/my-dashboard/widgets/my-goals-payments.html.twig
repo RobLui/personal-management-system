@@ -1,5 +1,4 @@
 {% set curr_date =  date() %}
-
 <div class="masonry-item col-md-6">
     <div class="bd bgc-white p-20">
         <div class="layers">
@@ -8,18 +7,13 @@
             </div>
             <div class="layer w-100">
                 <div class="row">
-
                     {% for payment in goals_payments %}
-
                         <div class="col-md-6">
-
                             {% include 'modules/my-goals/calculations/one-payment.html.twig' with {
                                 'template': 'modules/my-goals/components/one-payment.html.twig',
                                 'col_size': 12
-                            }%}
-
+                            } %}
                         </div>
-
                     {% endfor %}
                 </div>
 
