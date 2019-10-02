@@ -12,9 +12,6 @@ class MyContactsSettingsController extends AbstractController
      */
     public function index()
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/Modules/Contacts/MyContactsSettingsController.php',
-        ]);
+        return;
     }
 }

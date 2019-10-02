@@ -381,7 +381,7 @@ class Repositories extends AbstractController {
     }
 
     private function isPasswordValueValid($value) {
-        return !empty($value);
+        return !empty($vwalue);
     }
 
     /**
